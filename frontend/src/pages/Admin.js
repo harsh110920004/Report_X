@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { adminAPI } from '../utils/api';
 import '../styles/Admin.css';
 
@@ -11,10 +11,7 @@ const Admin = () => {
   const [updateForm, setUpdateForm] = useState({ status: '', adminFeedback: '' });
   const [message, setMessage] = useState({ type: '', text: '' });
 
-  useEffect(() => {
-    fetchStatistics();
-    fetchReports();
-  }, [filter]);
+  
 
   const fetchStatistics = async () => {
     try {
@@ -27,7 +24,7 @@ const Admin = () => {
     }
   };
 
-  const fetchReports = async () => {
+  const fetchReports = useCallback(async () => {
     try {
       setLoading(true);
       const response = await adminAPI.getReports(filter);
@@ -43,7 +40,12 @@ const Admin = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [filter]);;
+
+  useEffect(() => {
+  fetchStatistics();
+  fetchReports();
+}, [fetchReports]);
 
   const handleFilterChange = (e) => {
     setFilter({ ...filter, [e.target.name]: e.target.value });
@@ -252,7 +254,7 @@ const Admin = () => {
                 <div className="detail-row">
                   <strong>Evidence Image:</strong>
                   <img 
-                    src={`http://localhost:5000/uploads/${selectedReport.image}`} 
+                    src={`https://report-x-k6w3.onrender.com/uploads/${selectedReport.image}`} 
                     alt="Evidence" 
                     className="evidence-image"
                   />
